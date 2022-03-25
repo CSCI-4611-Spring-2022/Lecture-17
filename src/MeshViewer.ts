@@ -5,6 +5,7 @@ import * as IK from 'ikts'
 import { GUI } from 'dat.gui'
 import { GraphicsApp } from './GraphicsApp'
 import { RobotPart } from './RobotPart';
+import { KeyframeAnimation } from './KeyframeAnimation'
 
 export class MeshViewer extends GraphicsApp
 { 
@@ -21,6 +22,9 @@ export class MeshViewer extends GraphicsApp
     private targetMesh: THREE.Mesh;
     private transformControls: TransformControls;
 
+    // Holds all the keyframes
+    private animation: KeyframeAnimation;
+
     constructor()
     {
         // Pass in the aspect ratio to the constructor
@@ -35,6 +39,7 @@ export class MeshViewer extends GraphicsApp
 
         this.transformControls = new TransformControls(this.camera, this.renderer.domElement);
         this.targetMesh = new THREE.Mesh();
+        this.animation = new KeyframeAnimation(this.targetMesh);
     }
 
     createScene(): void
@@ -58,17 +63,17 @@ export class MeshViewer extends GraphicsApp
         // Create the GUI
         const gui = new GUI();
 
-        // const animationControls = gui.addFolder('Animation');
-        // animationControls.open();
+        const animationControls = gui.addFolder('Animation');
+        animationControls.open();
 
-        // const motionModeControl = animationControls.add(this, 'motionMode', ["Linear", "Spline"]);
-        // motionModeControl.name('Motion');
+        const motionModeControl = animationControls.add(this, 'motionMode', ["Linear", "Spline"]);
+        motionModeControl.name('Motion');
 
-        // const keyframeButton = animationControls.add(this, 'addKeyframe');
-        // keyframeButton.name('Add Keyframe');
+        const keyframeButton = animationControls.add(this, 'addKeyframe');
+        keyframeButton.name('Add Keyframe');
 
-        // const animationButton = animationControls.add(this, 'playAnimation');
-        // animationButton.name('Play Animation');
+        const animationButton = animationControls.add(this, 'playAnimation');
+        animationButton.name('Play Animation');
         
         const debugControls = gui.addFolder('Debugging');
         debugControls.open();
@@ -117,6 +122,11 @@ export class MeshViewer extends GraphicsApp
 
     update(deltaTime: number): void
     {
+        this.animation.update(deltaTime, this.motionMode=='Spline');
+
+        this.transformControls.visible = !this.animation.playing;
+        this.targetMesh.visible = !this.animation.playing;
+
         this.ikSolver.targets[0].set(this.targetMesh.position.x, this.targetMesh.position.y, this.targetMesh.position.z);
         this.ikSolver.update();
         this.robotRoot.update();
@@ -129,11 +139,11 @@ export class MeshViewer extends GraphicsApp
 
     private addKeyframe(): void
     {
-        // TO DO
+        this.animation.addKeyframe(this.targetMesh.position);
     }
 
     private playAnimation(): void
     {
-        // TO DO
+        this.animation.play();
     }
 }

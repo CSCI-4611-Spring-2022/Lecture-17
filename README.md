@@ -1,6 +1,6 @@
-# Lecture 17: Keyframe Animation
+# Lecture 17: Keyframing and Splines
 
-Detailed explanation of this code can be found in the lecture video.
+Detailed explanation of this code can be found in the [lecture video](https://mediaspace.umn.edu/media/t/1_ukjgw4wk).
 
 You can run the program on [GitHub pages](https://csci-4611-spring-2022.github.io/Lecture-17).
 
